@@ -11,8 +11,8 @@ topics:
   - multi-window
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ^3.35.3
 
 screenshots:
   - description: "Infospect Desktop Multi Window- macOS"
