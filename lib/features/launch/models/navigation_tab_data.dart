@@ -5,8 +5,8 @@ import 'package:infospect/utils/common_widgets/app_bottom_bar.dart';
 class NavigationTabData {
   static List<BottomBarItem> get tabs {
     return [
-      (icon: FontAwesomeIcons.globe, title: "Network calls"),
-      (icon: FontAwesomeIcons.list, title: "Logs")
+      (icon: FontAwesomeIcons.globe.data, title: "Network calls"),
+      (icon: FontAwesomeIcons.list.data, title: "Logs")
     ];
   }
 }

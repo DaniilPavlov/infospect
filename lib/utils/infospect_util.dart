@@ -12,11 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-typedef ShareFileData = ({
-  RandomAccessFile randomAccessFile,
-  String path,
-  Directory directory
-});
+typedef ShareFileData = ({RandomAccessFile randomAccessFile, String path, Directory directory});
 
 enum MainWindowArguments {
   shareNetworkCallLogs,
@@ -26,8 +22,7 @@ enum MainWindowArguments {
 }
 
 class InfospectUtil {
-  static bool get isDesktop =>
-      (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+  static bool get isDesktop => (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
   static void log(
     String message, {
     Object? error,
@@ -62,8 +57,7 @@ class InfospectUtil {
 
       var bodyContent = 'Empty';
 
-      if (contentType == null ||
-          !contentType.toLowerCase().contains('application/json')) {
+      if (contentType == null || !contentType.toLowerCase().contains('application/json')) {
         final bodyTemp = body.toString();
 
         if (bodyTemp.isNotEmpty) {
@@ -130,11 +124,8 @@ class InfospectUtil {
     const String name = 'network_calls_log';
     final ShareFileData shareFileData = await _getShareFileData(name);
 
-    for (int i = 1;
-        i <= Infospect.instance.networkCallsSubject.value.length;
-        i++) {
-      final InfospectNetworkCall item =
-          Infospect.instance.networkCallsSubject.value.elementAt(i - 1);
+    for (int i = 1; i <= Infospect.instance.networkCallsSubject.value.length; i++) {
+      final InfospectNetworkCall item = Infospect.instance.networkCallsSubject.value.elementAt(i - 1);
       shareFileData.randomAccessFile.writeStringSync(
         '$i:{[${item.method}] -> ${item.uri}}\n'
         '${await item.sharableData}\n',
@@ -147,8 +138,7 @@ class InfospectUtil {
   }
 
   /// Compress the file and return the compressed file
-  static Future<File?> _getCompressedFile(
-      String name, ShareFileData shareFileData) async {
+  static Future<File?> _getCompressedFile(String name, ShareFileData shareFileData) async {
     final String zipFileName = 'infospect_$name.tar.gz';
     final String zipFilePath = join(shareFileData.path, zipFileName);
     if (!shareFileData.directory.existsSync()) {
@@ -158,7 +148,7 @@ class InfospectUtil {
     await TarFileEncoder().tarDirectory(
       shareFileData.directory,
       filename: zipFilePath,
-      compression: TarFileEncoder.GZIP,
+      compression: TarFileEncoder.gzip,
     );
 
     return File(zipFilePath);
@@ -179,21 +169,15 @@ class InfospectUtil {
     } else {
       file = File(filePath);
     }
-    final RandomAccessFile randomAccessFile =
-        file.openSync(mode: FileMode.writeOnlyAppend);
+    final RandomAccessFile randomAccessFile = file.openSync(mode: FileMode.writeOnlyAppend);
 
-    return (
-      randomAccessFile: randomAccessFile,
-      path: path,
-      directory: directory
-    );
+    return (randomAccessFile: randomAccessFile, path: path, directory: directory);
   }
 
   /// Get the path to store the logs
   static Future<String> getPath() async {
     if (defaultTargetPlatform == TargetPlatform.windows) {
-      final Directory internalCacheDirectory =
-          await getApplicationSupportDirectory();
+      final Directory internalCacheDirectory = await getApplicationSupportDirectory();
       return join(internalCacheDirectory.path, 'infospect');
     } else {
       final Directory internalCacheDirectory = await getTemporaryDirectory();
