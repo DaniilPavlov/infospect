@@ -111,14 +111,32 @@ class _MainAppState extends State<MainApp> with AppLoggerMixin, AppNetworkCall {
 
         /// Call the network library
         if (radioValue == 1) {
-          dioCall(dio: _dio, index: timer.tick);
+          unawaited(
+            dioCall(dio: _dio, index: timer.tick).catchError((error, stackTrace) {
+              logError(
+                'Dio request failed',
+                error: error,
+                stackTrace: stackTrace is StackTrace ? stackTrace : null,
+              );
+            }),
+          );
         } else {
-          httpCall(httpClient: _client, index: timer.tick);
+          unawaited(
+            httpCall(httpClient: _client, index: timer.tick).catchError((error, stackTrace) {
+              logError(
+                'Http request failed',
+                error: error,
+                stackTrace: stackTrace is StackTrace ? stackTrace : null,
+              );
+            }),
+          );
         }
 
         /// Log something
+        final DiagnosticLevel level = DiagnosticLevel.values[
+            (timer.tick - 1) % DiagnosticLevel.values.length];
         log(
-          DiagnosticLevel.values[timer.tick],
+          level,
           'test log ${timer.tick}',
           error: _getError(timer.tick),
           stackTrace: StackTrace.current,
@@ -182,7 +200,8 @@ mixin AppNetworkCall {
       {'id': index},
     );
 
-    switch (Method.values[(index - 1)]) {
+    final method = Method.values[(index - 1) % Method.values.length];
+    switch (method) {
       case Method.get:
         return dio.get(val.$1, options: val.$2, queryParameters: val.$3);
 
@@ -217,7 +236,8 @@ mixin AppNetworkCall {
       {'id': '$index'}
     );
 
-    switch (Method.values[(index - 1)]) {
+    final method = Method.values[(index - 1) % Method.values.length];
+    switch (method) {
       case Method.get:
         return httpClient.get(val.$1);
 
